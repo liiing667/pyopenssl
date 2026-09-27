@@ -21,6 +21,7 @@ else:
 from cryptography import x509
 from cryptography.hazmat.primitives.asymmetric import ec
 
+from OpenSSL import _compat
 from OpenSSL._util import (
     StrOrBytesPath as _StrOrBytesPath,
 )
@@ -691,7 +692,7 @@ class _OCSPClientCallbackHelper:
 
 class _CookieGenerateCallbackHelper:
     def __init__(self, callback: _CookieGenerateCallback) -> None:
-        max_cookie_len = getattr(_lib, "DTLS1_COOKIE_LENGTH", 255)
+        max_cookie_len = _compat.DTLS1_COOKIE_LENGTH
 
         @wraps(callback)
         def wrapper(ssl, out, outlen):  # type: ignore[no-untyped-def]
@@ -792,16 +793,16 @@ def _make_requires(flag: int, error: str) -> Callable[[_T], _T]:
 
 
 _requires_keylog = _make_requires(
-    getattr(_lib, "Cryptography_HAS_KEYLOG", 0), "Key logging not available"
+    _compat.HAS_KEYLOG, "Key logging not available"
 )
 
 _requires_ssl_get0_group_name = _make_requires(
-    getattr(_lib, "Cryptography_HAS_SSL_GET0_GROUP_NAME", 0),
+    _compat.HAS_SSL_GET0_GROUP_NAME,
     "Getting group name is not supported by the linked OpenSSL version",
 )
 
 _requires_ssl_cookie = _make_requires(
-    getattr(_lib, "Cryptography_HAS_SSL_COOKIE", 0),
+    _compat.HAS_SSL_COOKIE,
     "DTLS cookie support is not available",
 )
 
@@ -2066,9 +2067,9 @@ class Connection:
             # the behavior before we added this elif section
             peeked_error = _lib.ERR_peek_error()
             reason = _lib.ERR_GET_REASON(peeked_error)
-            if _lib.Cryptography_HAS_UNEXPECTED_EOF_WHILE_READING:
+            if _compat.HAS_UNEXPECTED_EOF_WHILE_READING:
                 _openssl_assert(
-                    reason == _lib.SSL_R_UNEXPECTED_EOF_WHILE_READING
+                    reason == _compat.SSL_R_UNEXPECTED_EOF_WHILE_READING
                 )
                 _lib.ERR_clear_error()
                 raise SysCallError(-1, "Unexpected EOF")
@@ -2234,7 +2235,7 @@ class Connection:
         .. versionadded:: 21.1
         """
 
-        if not hasattr(_lib, "DTLS_get_data_mtu"):
+        if not _compat.HAS_DTLS_GET_DATA_MTU:
             raise NotImplementedError("requires OpenSSL 1.1.1 or better")
         return _lib.DTLS_get_data_mtu(self._ssl)
 

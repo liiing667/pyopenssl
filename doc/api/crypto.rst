@@ -138,6 +138,9 @@ Exceptions
 
     Generic exception used in the :py:mod:`.crypto` module.
 
+    Like :py:exc:`OpenSSL.SSL.Error`, it carries an ``openssl_errors``
+    attribute with the numeric OpenSSL error codes preserved.
+
 
 Digest names
 ------------

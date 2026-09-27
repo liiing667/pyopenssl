@@ -1,12 +1,12 @@
 import ssl
 import sys
 
-import cffi
 import cryptography
 
 import OpenSSL.SSL
 
 from . import version
+from ._compat import CFFI_VERSION
 
 _env_info = """\
 pyOpenSSL: {pyopenssl}
@@ -28,7 +28,7 @@ sys.path: {sys_path}""".format(
     ).decode("ascii"),
     python_openssl=getattr(ssl, "OPENSSL_VERSION", "n/a"),
     cryptography=cryptography.__version__,
-    cffi=cffi.__version__,
+    cffi=CFFI_VERSION,
     python=sys.executable,
     python_version=sys.version,
     platform=sys.platform,

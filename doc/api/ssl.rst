@@ -177,6 +177,16 @@ Context, Connection.
     reason)*. Here *lib*, *function* and *reason* are all strings, describing
     where and what the problem is. See :manpage:`err(3)` for more information.
 
+    Additionally, the exception carries an ``openssl_errors`` attribute: a
+    list of named tuples with the fields *library*, *function*, and *reason*
+    (the same strings as above) plus *code*, *library_code*, and
+    *reason_code* - the numeric OpenSSL error codes.  These allow specific
+    failure causes to be told apart programmatically, for example an expired
+    certificate versus a handshake failure.
+
+    .. versionadded:: 26.4.1
+        The ``openssl_errors`` attribute.
+
 
 .. py:exception:: ZeroReturnError
 

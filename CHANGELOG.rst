@@ -21,6 +21,18 @@ Deprecations:
 Changes:
 ^^^^^^^^
 
+- Exceptions raised from OpenSSL's error queue (such as ``OpenSSL.SSL.Error``
+  and ``OpenSSL.crypto.Error``) now carry an ``openssl_errors`` attribute with
+  the numeric library and reason codes preserved, so specific failure causes
+  (for example an expired certificate versus a handshake failure) can be told
+  apart programmatically. The exceptions' existing arguments are unchanged.
+- Differences between OpenSSL and ``cryptography`` versions are now detected
+  centrally in the new private ``OpenSSL._compat`` module, and optional features
+  degrade gracefully (raising ``NotImplementedError`` where documented) instead
+  of failing with ``AttributeError``.
+- ``python -m OpenSSL.debug`` no longer crashes when only the compiled
+  ``_cffi_backend`` (and not the ``cffi`` Python package) is installed, as is
+  the case with newer ``cryptography`` releases.
 - Fixed a race in which an exception raised by a verify, ALPN selection, OCSP, or DTLS cookie callback for one ``Connection`` could be raised on an unrelated ``Connection`` created from the same ``Context`` and used concurrently from another thread. Exceptions from these callbacks are now tracked per ``Connection``. Discovered and reported by SecDim Security Research.
 - Fixed exceptions raised by a verify callback registered with ``Connection.set_verify`` being swallowed instead of being propagated to the caller.
 
